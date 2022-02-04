@@ -1,5 +1,5 @@
 const express = require('express'); // aqui acontece o import do pacote necessário nessa parte
-const {uuid} = require('uuidv4');
+const {uuid} = require('uuidv4'); // desestruturação do método uuid de dentro da dependência, apenas o método em questão
 
 const app = express(); // Aqui acontece a criação de uma instância (objeto cujos métodos são definidos pela classe) da classe express
 
@@ -29,25 +29,40 @@ app.post('/projects', (request, response) => {
     return response.json(project);
 })
 
-app.put('/projects/:id/owner/:owner_id', (request, response) => {
-    const params = request.params; //pega todos os parâmetros, ao contrário do query que pega os nomeados
+app.put('/projects/:id', (request, response) => {
+    const { id } = request.params; //pega todos os parâmetros, ao contrário do query que pega os nomeados
 
-    console.log(params);
+    const { title, owner } = request.body;
 
-    return response.json([ // Essa resposta gerada no browser já é considerada um endpoint
-        'Projeto 5',
-        'Projeto 2',
-        'Projeto 3',
-        'Projeto 4'
-    ]);
+    const projectIndex = projects.findIndex(project => project.id === id);
+   
+    if (projectIndex < 0) {
+        return response.status(400).json({error: 'Project not found.'});
+    }
+
+    const project = {
+        id,
+        title,
+        owner
+    };
+
+    projects[projectIndex] = project;
+
+    return response.json(project);
 })
  
 app.delete('/projects/:id', (request, response) => {
-    return response.json([ // Essa resposta gerada no browser já é considerada um endpoint
-        'Projeto 5',
-        'Projeto 2',
-        'Projeto 4'
-    ]);
+    const { id } = request.params;
+
+    const projectIndex = projects.findIndex(project => project.id === id);
+   
+    if (projectIndex < 0) {
+        return response.status(400).json({error: 'Project not found.'});
+    }
+
+    projects.splice(projectIndex, 1);
+
+    return response.status(204).json();
 })
  
 
