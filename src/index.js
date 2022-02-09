@@ -9,7 +9,19 @@ app.use(express.json()); // necessário definir que o padrão de utilização se
 
 const projects = []; 
 
-app.get('/projects', (request, response) => { // o '/projects' é equivalente a rota que vai ser acessada; Na arrow function que se segue os request e o response são passados como parâmetros da função
+function logRoutes(request, response, next) { // middleware - serve para interceptar uma requisição
+    const { method, url } = request;
+
+    const route = `[${method.toUpperCase()}] ${url}`;
+
+    console.log(route);
+
+    return next(); // necessário para que a função da requisição seja continuada. Exemplo de utilização do Middleware em uma rota específicaapp.get('/projects', logRoutes, (request, response) => {});
+}
+
+// app.use(logRoutes); //definimos aqui que a função será utilizada pela instância a cada requisição
+
+app.get('/projects', logRoutes, (request, response) => { // o '/projects' é equivalente a rota que vai ser acessada; Na arrow function que se segue os request e o response são passados como parâmetros da função
     const { title } = request.query;
 
     const results = title 
