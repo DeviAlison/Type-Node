@@ -10,7 +10,12 @@ app.use(express.json()); // necessário definir que o padrão de utilização se
 const projects = []; 
 
 app.get('/projects', (request, response) => { // o '/projects' é equivalente a rota que vai ser acessada; Na arrow function que se segue os request e o response são passados como parâmetros da função
-    return response.json(projects);
+    const { title } = request.query;
+
+    const results = title 
+    ? projects.filter(project => project.title.includes(title)) 
+    : projects;
+    return response.json(results);
 });
 
 app.post('/projects', (request, response) => {
